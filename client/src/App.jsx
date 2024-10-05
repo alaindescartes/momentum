@@ -1,9 +1,19 @@
-import { useState } from 'react';
+import { createBrowserRouter } from 'react-router-dom';
+import Header from './components/Header.jsx';
+import Wrapper from './components/Wrapper.jsx';
+import SignIn from './components/SignIn.jsx';
 
-function App() {
-  const [count, setCount] = useState(0);
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Wrapper />,
+    children: [
+      {
+        index: true,
+        element: <SignIn />,
+      },
+    ],
+  },
+]);
 
-  return <div className="text-3xl text-red-400">hey there </div>;
-}
-
-export default App;
+export default router;
