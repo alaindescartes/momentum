@@ -1,0 +1,66 @@
+const express = require('express');
+const User = require('../models/userModel');
+const router = express.Router();
+const AppError = require('../error/Error');
+const bcrypt = require('bcryptjs');
+const e = require('express');
+
+router.post('/auth/sign-up', async (req, res, next) => {
+  try {
+    const { email, username, password } = req.body;
+
+    //check if user already exists
+    const user = await User.findOne({ email: email });
+    if (user) {
+      return next(new AppError('User already exists', 400));
+    }
+
+    //Hash the password
+    const hashedPassword = bcrypt.hashSync(password, 12);
+
+    //Create and save newUser
+    const newUser = new User({ email, username, password: hashedPassword });
+    await newUser.save();
+    return res
+      .status(200)
+      .json({ message: 'User successfully created', user: newUser });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/auth/sign-in', async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+
+    // Check if both username and password are provided
+    if (!username || !password) {
+      return next(new AppError('All fields are required', 400));
+    }
+
+    // Check if user exists
+    const user = await User.findOne({ username });
+    if (!user) {
+      return next(new AppError('Invalid username or password', 400));
+    }
+
+    // Compare provided password with stored hashed password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return next(new AppError('Invalid username or password', 400));
+    }
+
+    // Filter the user fields, excluding the password
+    const { password: userPassword, ...filteredUser } = user.toObject();
+
+    // If username and password are valid
+    return res.status(200).json({
+      message: 'User successfully logged in',
+      filteredUser,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+module.exports = router;
