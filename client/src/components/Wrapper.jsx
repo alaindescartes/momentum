@@ -1,11 +1,15 @@
+import { Toaster } from '@/components/ui/sonner';
 import { Outlet } from 'react-router-dom';
 import Header from './Header.jsx';
 
 const Wrapper = () => {
   return (
     <>
+      <Toaster />
       <Header />
-      <Outlet />
+      <main>
+        <Outlet />
+      </main>
     </>
   );
 };

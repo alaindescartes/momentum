@@ -4,10 +4,14 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const app = express();
 const userRouter = require('./userRouter/auth');
-const appError = require('./error/Error');
 
 // Middleware
-app.use(cors()); // Enable CORS
+app.use(
+  cors({
+    origin: 'http://localhost:5173', // Allow only requests from this origin
+    credentials: true,
+  })
+); // Enable CORS
 app.use(express.json()); // Parse JSON bodies
 
 // Connect to MongoDB
@@ -30,6 +34,7 @@ app.use((err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
 
+  console.log(err);
   res.status(err.statusCode).json({
     status: err.status,
     message: err.message,
