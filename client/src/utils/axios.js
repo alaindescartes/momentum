@@ -6,6 +6,7 @@ const axiosInstance = async (url, method = 'GET', data = null) => {
       method: method.toLowerCase(),
       url: `http://localhost:8888/${url}`,
       data: data,
+      withCredentials: true,
     });
 
     return response.data;

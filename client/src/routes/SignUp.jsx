@@ -4,7 +4,11 @@ import { toast } from 'sonner';
 import axiosInstance from '../utils/axios';
 
 const SignUp = () => {
-  const [formdata, setFormData] = useState({ username: '', password: '' });
+  const [formdata, setFormData] = useState({
+    username: '',
+    password: '',
+    email: '',
+  });
   const navigate = useNavigate();
 
   //capture inputs using state

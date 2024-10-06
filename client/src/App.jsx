@@ -1,8 +1,9 @@
 import { createBrowserRouter } from 'react-router-dom';
+import ProtectedRoutes from './components/ProtectedRoutes.jsx';
 import Wrapper from './components/Wrapper.jsx';
-import SignIn from './routes/SignIn.jsx';
-import SignUp from "./routes/SignUp.jsx";
 import Dashboard from './routes/Dashboard.jsx';
+import SignIn from './routes/SignIn.jsx';
+import SignUp from './routes/SignUp.jsx';
 
 const router = createBrowserRouter([
   {
@@ -17,10 +18,17 @@ const router = createBrowserRouter([
         path: 'signUp',
         element: <SignUp />,
       },
+
+      //protected routes
       {
-        path: 'dashboard',
-        element:<Dashboard />,
-      }
+        element: <ProtectedRoutes />,
+        children: [
+          {
+            path: 'dashboard',
+            element: <Dashboard />,
+          },
+        ],
+      },
     ],
   },
 ]);

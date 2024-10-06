@@ -4,6 +4,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const app = express();
 const userRouter = require('./userRouter/auth');
+const cookieParser = require('cookie-parser');
 
 // Middleware
 app.use(
@@ -13,6 +14,7 @@ app.use(
   })
 ); // Enable CORS
 app.use(express.json()); // Parse JSON bodies
+app.use(cookieParser());
 
 // Connect to MongoDB
 mongoose

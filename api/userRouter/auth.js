@@ -4,10 +4,15 @@ const router = express.Router();
 const AppError = require('../error/Error');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const verifyToken = require('../middleware/verifyToken');
 
 router.post('/auth/sign-up', async (req, res, next) => {
   try {
     const { email, username, password } = req.body;
+
+    //check that all the fields have been submitted
+    if (!email || !username || !password)
+      return next(AppError('all fields are required', 404));
 
     //check if user already exists
     const user = await User.findOne({ email: email });
@@ -35,6 +40,7 @@ router.post('/auth/sign-up', async (req, res, next) => {
 });
 
 router.post('/auth/sign-in', async (req, res, next) => {
+  console.log('Incoming cookies:', req.cookies);
   try {
     const { username, password } = req.body;
 
@@ -69,7 +75,7 @@ router.post('/auth/sign-in', async (req, res, next) => {
         maxAge: 2 * 60 * 60 * 1000,
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict', //protect against CSRF attacks
+        sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax', //protect against CSRF attacks
       })
       .json({ message: 'user successfully logged in', user: filteredUser });
   } catch (err) {
@@ -77,4 +83,8 @@ router.post('/auth/sign-in', async (req, res, next) => {
   }
 });
 
+// Route to check if the user is authenticated
+router.get('/auth/check-auth', verifyToken, (req, res) => {
+  res.json({ message: 'User is authenticated', user: req.user });
+});
 module.exports = router;
