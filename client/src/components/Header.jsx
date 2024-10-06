@@ -111,7 +111,7 @@ const Header = ({ onLogout }) => {
               {/* Navigation Links */}
               <nav className="flex flex-col space-y-4">
                 <Link
-                  to="/"
+                  to="/dashboard"
                   onClick={handleMenuItemClick}
                   className="text-gray-600 hover:text-gray-800 transition duration-300"
                 >
