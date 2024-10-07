@@ -1,5 +1,11 @@
+import {
+  updateAuthState,
+  updateLoadingState,
+  updateUserState,
+} from '@/redux/slices/userSlice';
 import axiosInstance from '@/utils/axios';
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -8,10 +14,14 @@ const SignIn = () => {
     username: '',
     password: '',
   });
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const isLoading = useSelector(state => state.user.isLoading);
+  const dispatch = useDispatch();
 
   //capture inputs using state
   const handleChange = e => {
+    setError(null);
     const { name, value } = e.target;
     setFormData(prevData => ({
       ...prevData,
@@ -23,6 +33,8 @@ const SignIn = () => {
   const handleSubmission = async e => {
     e.preventDefault();
     try {
+      //set loading to true
+      dispatch(updateLoadingState(true));
       const response = await axiosInstance(
         'api/auth/sign-in',
         'POST',
@@ -36,14 +48,29 @@ const SignIn = () => {
             color: '#fff',
           },
         });
-        navigate('dashboard');
+
+        //set userData in the global store
+        dispatch(updateUserState(response.user));
+        dispatch(updateAuthState(true));
+        navigate('/dashboard');
       }
-    } catch (error) {}
+    } catch (error) {
+      setError(error.response.data.message);
+    } finally {
+      //set loading back to false
+      dispatch(updateLoadingState(false));
+    }
   };
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 flex-col">
+      {error && (
+        <p className="bg-red-500 text-white font-bold px-4 py-2 rounded-md">
+          {error}
+        </p>
+      )}
+
       <form
-        className="bg-white shadow-md rounded-lg p-8 flex flex-col gap-4 w-full max-w-md"
+        className="bg-white shadow-md mt-6 rounded-lg p-8 flex flex-col gap-4 w-full max-w-md"
         onSubmit={handleSubmission}
       >
         <h2 className="text-3xl font-bold text-gray-700 mb-5 text-center">
@@ -67,10 +94,11 @@ const SignIn = () => {
         />
 
         <button
+          disabled={isLoading ? true : false}
           type="submit"
           className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition-colors duration-300"
         >
-          Sign In
+          {isLoading ? 'Logging In...' : ' Sign In'}
         </button>
 
         <div className="flex items-center justify-center gap-2 mt-4">
@@ -80,9 +108,11 @@ const SignIn = () => {
         </div>
 
         <button
+          disabled={isLoading ? true : false}
           type="button"
           className="mt-2 px-4 py-2 bg-red-500 text-white font-semibold rounded-md hover:bg-red-600 transition-colors duration-300"
         >
+          {/* TODO:add google auth */}
           Sign in with Google
         </button>
 

@@ -1,18 +1,14 @@
-import useAuth from '@/utils/useAuth';
+import { useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
 
 function ProtectedRoutes() {
-  const { isAuthenticated, loading } = useAuth();
+  const isAuthenticated = useSelector(state => state.user.isAuthenticated);
 
-  if (loading) {
-    return <div>Loading...</div>;
+  if (isAuthenticated) {
+    return <Outlet />;
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
-
-  return <Outlet />;
+  return <Navigate to="/" replace />;
 }
 
 export default ProtectedRoutes;

@@ -1,15 +1,16 @@
 import { Toaster } from '@/components/ui/sonner';
 import useAuth from '@/utils/useAuth.js';
+import { useSelector } from 'react-redux';
 import { Outlet } from 'react-router-dom';
 import Header from './Header.jsx';
 
 const Wrapper = () => {
-  const { isAuthenticated, loading } = useAuth();
-  console.log(isAuthenticated);
+  const isAuthenticated = useSelector(state => state.user.isAuthenticated);
+  const { loading } = useAuth();
   return (
     <>
       <Toaster />
-      {isAuthenticated ? <Header /> : null}
+      {isAuthenticated && <Header />}
       <main>
         <Outlet />
       </main>
