@@ -12,7 +12,7 @@ router.post('/auth/sign-up', async (req, res, next) => {
 
     //check that all the fields have been submitted
     if (!email || !username || !password)
-      return next(AppError('all fields are required', 404));
+      return next(new AppError('all fields are required', 404));
 
     //check if user already exists
     const user = await User.findOne({ email: email });

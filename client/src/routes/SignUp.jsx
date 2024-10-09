@@ -9,10 +9,12 @@ const SignUp = () => {
     password: '',
     email: '',
   });
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   //capture inputs using state
   const handleChange = e => {
+    setError(null);
     const { name, value } = e.target;
     setFormData(prevData => ({
       ...prevData,
@@ -21,11 +23,27 @@ const SignUp = () => {
   };
 
   //submit the form to the backend
-  const handleSubmission = e => {
+  const handleSubmission = async e => {
     e.preventDefault();
 
     try {
-      const data = axiosInstance('api/auth/sign-up/', 'POST', formdata);
+      if (!formdata.email || !formdata.password || !formdata.username) {
+        setError('All fields must be competed');
+        return;
+      }
+      const response = await axiosInstance(
+        'api/auth/sign-up/',
+        'POST',
+        formdata
+      );
+
+      let user = response.data.user;
+
+      if (!user) {
+        setError(response.data?.message || 'Error during signup');
+        return;
+      }
+      console.log('in signUP', response);
       toast('User successfully created', {
         style: {
           background: '#4caf50',
@@ -35,12 +53,18 @@ const SignUp = () => {
 
       navigate('/');
     } catch (error) {
+      setError('An error occurred during signup');
       console.log('error occured: ', error);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 flex-col gap-4">
+      {error && (
+        <p className="bg-red-500 text-white font-bold px-4 py-2 rounded-md">
+          {error}
+        </p>
+      )}
       <form
         className="bg-white shadow-md rounded-lg p-8 flex flex-col gap-4 w-full max-w-md"
         onSubmit={handleSubmission}

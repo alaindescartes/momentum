@@ -41,6 +41,7 @@ const SignIn = () => {
         formdata
       );
       const user = response.data.user;
+
       if (user) {
         console.log('Dispatching updateUserState with:', user);
         //set userData in the global store
@@ -56,8 +57,9 @@ const SignIn = () => {
         });
       }
     } catch (error) {
-      setError(error.message);
-      console.log(error);
+      const errorMessage = error.response.data.message;
+      setError(errorMessage);
+      console.log('error', error);
     } finally {
       //set loading back to false
       dispatch(updateLoadingState(false));
