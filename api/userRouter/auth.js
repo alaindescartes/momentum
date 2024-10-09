@@ -87,4 +87,13 @@ router.post('/auth/sign-in', async (req, res, next) => {
 router.get('/auth/check-auth', verifyToken, (req, res) => {
   res.json({ message: 'User is authenticated', user: req.user });
 });
+
+router.post('/auth/logout', (req, res) => {
+  res.clearCookie('accessToken', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+  });
+  res.status(200).json({ message: 'logged out successfully', status: 200 });
+});
 module.exports = router;

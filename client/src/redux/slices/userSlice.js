@@ -16,6 +16,14 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     updateUserState: (state, action) => {
+      if (!state.user) {
+        state.user = {
+          id: null,
+          role: null,
+          username: null,
+          email: null,
+        };
+      }
       state.user.id = action.payload._id;
       state.user.username = action.payload.username;
       state.user.role = action.payload.role;
@@ -29,11 +37,25 @@ export const userSlice = createSlice({
     updateLoadingState: (state, action) => {
       state.isLoading = action.payload;
     },
+
+    resetState: state => {
+      state.user = {
+        id: null,
+        role: null,
+        username: null,
+        email: null,
+      };
+
+      state.isAuthenticated = false;
+    },
   },
 });
 
-// Action creators are generated for each case reducer function
-export const { updateAuthState, updateLoadingState, updateUserState } =
-  userSlice.actions;
+export const {
+  updateAuthState,
+  updateLoadingState,
+  updateUserState,
+  resetState,
+} = userSlice.actions;
 
 export default userSlice.reducer;

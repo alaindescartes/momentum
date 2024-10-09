@@ -9,9 +9,7 @@ const axiosInstance = async (url, method = 'GET', data = null) => {
       withCredentials: true,
     });
 
-    console.log(response);
-
-    return response.data;
+    return response;
   } catch (error) {
     console.error('Error with Axios request:', error);
     throw error;

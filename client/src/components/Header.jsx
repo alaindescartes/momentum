@@ -1,9 +1,39 @@
-// Header.jsx
+import { resetState } from '@/redux/slices/userSlice';
+import { persistor } from '@/redux/store';
+import axiosInstance from '@/utils/axios';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
-const Header = ({ onLogout }) => {
+const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  //*function to complete logout process
+  const onLogout = async () => {
+    try {
+      const response = await axiosInstance('api/auth/logout', 'POST');
+      console.log('response ', response);
+      if (response.status === 200) {
+        //invalidate store after logout
+        dispatch(resetState());
+
+        //clear the perisisted state from the local storage
+        await persistor.purge();
+        toast('successfully logged out', {
+          style: {
+            background: '#4caf50',
+            color: '#fff',
+          },
+        });
+        navigate('/');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   // Function to handle menu item click
   const handleMenuItemClick = () => {

@@ -40,22 +40,24 @@ const SignIn = () => {
         'POST',
         formdata
       );
+      const user = response.data.user;
+      if (user) {
+        console.log('Dispatching updateUserState with:', user);
+        //set userData in the global store
+        dispatch(updateUserState(user));
+        dispatch(updateAuthState(true));
 
-      if (response.user) {
+        navigate('/dashboard');
         toast('successfully logged in', {
           style: {
             background: '#4caf50',
             color: '#fff',
           },
         });
-
-        //set userData in the global store
-        dispatch(updateUserState(response.user));
-        dispatch(updateAuthState(true));
-        navigate('/dashboard');
       }
     } catch (error) {
-      setError(error.response.data.message);
+      setError(error.message);
+      console.log(error);
     } finally {
       //set loading back to false
       dispatch(updateLoadingState(false));
